@@ -2,18 +2,25 @@ import React, { Component } from 'react';
 import dateFns from 'date-fns'
 import xml2js from 'xml2js'
 import soap from '../lib/soap'
-import { Grid, Segment, Label, Button } from 'semantic-ui-react'
+import {Grid, Segment, Label, Button, Modal} from 'semantic-ui-react'
 import MeetingDetails from '../component/meetingDetails'
+import AddForm from "./addForm";
 
 class Calendar extends Component {
     constructor(props){
         super(props)
         this.state = {
+            addMeeting: false,
             meetings : [],
             currentMonth: new Date(),
             selectedDate: new Date()
         }
     }
+
+    open = () => this.setState({ addMeeting: true })
+
+    close = () => this.setState({ addMeeting: false })
+
     renderHeader() {
         const dateFormat = "MMMM YYYY";
         return (
@@ -79,7 +86,7 @@ class Calendar extends Component {
                         ><Label as='a' color='blue' ribbon>
                             {formattedDate}
                         </Label>
-                            <Button icon='add' size='mini' floated='right'/>
+                            <Button onClick={this.open} icon='add' size='mini' floated='right' />
                             <MeetingDetails data={currentDate in this.state.meetings ? this.state.meetings[currentDate] : []}/>
                         </Segment>
                     </Grid.Column>
@@ -95,6 +102,31 @@ class Calendar extends Component {
         }
         return <Grid>{rows}</Grid>;
     }
+
+
+    renderModal = () => {
+        return (
+            <Modal
+                open={this.state.addMeeting}
+                closeOnDimmerClick={false}
+                onClose={this.close}
+            >
+                <Modal.Header>New Meeting</Modal.Header>
+                <Modal.Content>
+                    <AddForm date={this.state.selectedDate}/>
+                </Modal.Content>
+                <Modal.Actions>
+
+                    <Button onClick={this.close} negative>
+                        Cancel
+                    </Button>
+
+                </Modal.Actions>
+            </Modal>
+        )
+    }
+
+
 
     onDateClick = day => {
         this.setState({
@@ -121,6 +153,7 @@ class Calendar extends Component {
                 {this.renderHeader()}
                 {this.renderDays()}
                 {this.renderCells()}
+                {this.renderModal()}
             </Grid>
         )
     }
@@ -202,13 +235,13 @@ class Calendar extends Component {
 
     componentDidMount(){
         this.updateMeetings();
-        this.intervalId = setInterval(() => {
-            this.updateMeetings();
-        }, 2000);
+        //this.intervalId = setInterval(() => {
+        //    this.updateMeetings();
+        //}, 2000);
     }
 
     componentWillUnMount(){
-        clearInterval(this.intervalId)
+        //clearInterval(this.intervalId)
     }
 
 
