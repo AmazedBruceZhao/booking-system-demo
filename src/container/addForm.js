@@ -43,7 +43,11 @@ class AddForm extends Component {
 
 
     render(){
-        console.log(dateFns.format(this.state.from, 'H'))
+        let fromHour = parseInt(dateFns.format(this.state.from, 'H'), 10)
+        let fromMin = parseInt(dateFns.format(this.state.from, 'm'), 10)
+        let toHour = parseInt(dateFns.format(this.state.to, 'H'), 10)
+        let toMin = parseInt(dateFns.format(this.state.to, 'm'), 10)
+
         return (
             <Form {...this.state.status.code}>
                 <Message
@@ -56,16 +60,16 @@ class AddForm extends Component {
                 />
                 <Form.Input fluid label='Title' placeholder='Title' value={this.state.title} onChange={this.textChange}/>
                 <Form.Group widths='equal' inline>
-                    <Form.Select fluid label='From' placeholder='Hour' options = {this.hours} value={dateFns.format(this.state.from, 'H')}/>
-                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={dateFns.format(this.state.from, 'M')}/>
-                    <Form.Select fluid label='To' placeholder='Hour' options = {this.hours} value={dateFns.format(this.state.to, 'H')}/>
-                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={dateFns.format(this.state.to, 'M')}/>
+                    <Form.Select fluid label='From' placeholder='Hour' options = {this.hours} value={fromHour} onChange={(e) => {console.log(e.target.value);this.setState({from: dateFns.setHours(this.state.from, e.target.value)});}}/>
+                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={fromMin}/>
+                    <Form.Select fluid label='To' placeholder='Hour' options = {this.hours} value={toHour}/>
+                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={toMin}/>
                 </Form.Group>
                 <Form.Input fluid label='Location' placeholder='Location' value={this.state.location}/>
                 <Form.Select fluid multiple label='Attendee' options={[
                     { key: 'bruce.zhao@esi-asia.com', text: 'Bruce Zhao', value: 'bruce.zhao@esi-asia.com' },
                     { key: 'test', text: 'test', value: 'test' },
-                ]} placeholder='Gender' />
+                ]} placeholder='Attendee' value={this.state.attendee}/>
                 <Form.TextArea label='Body' placeholder='Body' value={this.state.body}/>
                 <Form.Button
                     onClick={this.addMeeting}
