@@ -235,13 +235,13 @@ class Calendar extends Component {
 
     componentDidMount(){
         this.updateMeetings();
-        //this.intervalId = setInterval(() => {
-        //    this.updateMeetings();
-        //}, 2000);
+        this.intervalId = setInterval(() => {
+            this.updateMeetings();
+        }, 2000);
     }
 
     componentWillUnMount(){
-        //clearInterval(this.intervalId)
+        clearInterval(this.intervalId)
     }
 
 
