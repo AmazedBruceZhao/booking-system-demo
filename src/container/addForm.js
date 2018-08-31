@@ -36,12 +36,6 @@ class AddForm extends Component {
         }
     });
 
-    textChange = (e) => {
-        this.setState({title: e.target.value})
-    }
-
-
-
     render(){
         let fromHour = parseInt(dateFns.format(this.state.from, 'H'), 10)
         let fromMin = parseInt(dateFns.format(this.state.from, 'm'), 10)
@@ -58,19 +52,19 @@ class AddForm extends Component {
                     error
                     header={this.state.status.message}
                 />
-                <Form.Input fluid label='Title' placeholder='Title' value={this.state.title} onChange={this.textChange}/>
+                <Form.Input fluid label='Title' placeholder='Title' value={this.state.title} onChange={(e, {value}) => this.setState({title: value})}/>
                 <Form.Group widths='equal' inline>
-                    <Form.Select fluid label='From' placeholder='Hour' options = {this.hours} value={fromHour} onChange={(e) => {console.log(e.target.value);this.setState({from: dateFns.setHours(this.state.from, e.target.value)});}}/>
-                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={fromMin}/>
-                    <Form.Select fluid label='To' placeholder='Hour' options = {this.hours} value={toHour}/>
-                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={toMin}/>
+                    <Form.Select fluid label='From' placeholder='Hour' options = {this.hours} value={fromHour} onChange={(e, {value}) => {this.setState({from: dateFns.setHours(this.state.from, value)});}}/>
+                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={fromMin} onChange={(e, {value}) => {this.setState({from: dateFns.setMinutes(this.state.from, value)});}}/>
+                    <Form.Select fluid label='To' placeholder='Hour' options = {this.hours} value={toHour} onChange={(e, {value}) => {this.setState({to: dateFns.setHours(this.state.to, value)});}}/>
+                    <Form.Select fluid label='' placeholder='Minute' options = {this.minutes} value={toMin} onChange={(e, {value}) => {this.setState({to: dateFns.setMinutes(this.state.to, value)});}}/>
                 </Form.Group>
-                <Form.Input fluid label='Location' placeholder='Location' value={this.state.location}/>
+                <Form.Input fluid label='Location' placeholder='Location' value={this.state.location} onChange={(e, {value}) => this.setState({location: value})}/>
                 <Form.Select fluid multiple label='Attendee' options={[
                     { key: 'bruce.zhao@esi-asia.com', text: 'Bruce Zhao', value: 'bruce.zhao@esi-asia.com' },
                     { key: 'test', text: 'test', value: 'test' },
-                ]} placeholder='Attendee' value={this.state.attendee}/>
-                <Form.TextArea label='Body' placeholder='Body' value={this.state.body}/>
+                ]} placeholder='Attendee' value={this.state.attendee} onChange={(e, {value}) => this.setState({attendee: value})}/>
+                <Form.TextArea label='Body' placeholder='Body' value={this.state.body} onChange={(e, {value}) => this.setState({body: value})}/>
                 <Form.Button
                     onClick={this.addMeeting}
                     positive
