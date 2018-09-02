@@ -3,7 +3,7 @@ import dateFns from 'date-fns'
 import xml2js from 'xml2js'
 import soap from '../lib/soap'
 import {Grid, Segment, Label, Button, Modal} from 'semantic-ui-react'
-import MeetingDetails from '../component/meetingDetails'
+import MeetingList from '../component/meetingList'
 import AddForm from "./addForm";
 
 class Calendar extends Component {
@@ -87,7 +87,7 @@ class Calendar extends Component {
                             {formattedDate}
                         </Label>
                             <Button onClick={this.open} icon='add' size='mini' floated='right' />
-                            <MeetingDetails data={currentDate in this.state.meetings ? this.state.meetings[currentDate] : []}/>
+                            <MeetingList data={currentDate in this.state.meetings ? this.state.meetings[currentDate] : []}/>
                         </Segment>
                     </Grid.Column>
                 );
@@ -138,12 +138,14 @@ class Calendar extends Component {
         this.setState({
             currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
         });
+
     };
 
     prevMonth = () => {
         this.setState({
             currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
         });
+
     };
 
     render(){
@@ -160,12 +162,13 @@ class Calendar extends Component {
 
     updateMeetings(){
         const {currentMonth} = this.state;
+        //console.log(currentMonth)
         const monthStart = dateFns.startOfMonth(currentMonth);
         const monthEnd = dateFns.endOfMonth(monthStart);
         const startDate = dateFns.startOfWeek(monthStart);
         const endDate = dateFns.endOfWeek(monthEnd);
-        const start = dateFns.format(dateFns.subHours(startDate, 8), 'YYYY-MM-DD[T]HH:MM:ss[Z]');
-        const end = dateFns.format(dateFns.subHours(endDate, 8), 'YYYY-MM-DD[T]HH:MM:ss[Z]');
+        const start = dateFns.format(dateFns.subHours(startDate, 8), 'YYYY-MM-DD[T]HH:mm:ss[Z]');
+        const end = dateFns.format(dateFns.subHours(endDate, 8), 'YYYY-MM-DD[T]HH:mm:ss[Z]');
 
         const query = '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"\n' +
             '\txmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' +
@@ -183,7 +186,7 @@ class Calendar extends Component {
             '    </m:FindItem>\n' +
             '</soap:Body>\n' +
             '</soap:Envelope>';
-
+        //console.log(query);
         soap(query).then(res => {
             return res.text()
         }).then(data => {
@@ -198,14 +201,16 @@ class Calendar extends Component {
                         const meetings = []
                         if(res["m:RootFolder"][0]["t:Items"][0]["t:CalendarItem"]){
                             res["m:RootFolder"][0]["t:Items"][0]["t:CalendarItem"].map((item) => {
-                                let start = dateFns.format(dateFns.parse(item["t:Start"][0]), 'HH:MM:ss')
-                                let end = dateFns.format(dateFns.parse(item["t:End"][0]), 'HH:MM:ss')
+                                let start = dateFns.format(dateFns.parse(item["t:Start"][0]), 'HH:mm:ss')
+                                let end = dateFns.format(dateFns.parse(item["t:End"][0]), 'HH:mm:ss')
                                 let location = item["t:Location"] ? item["t:Location"][0] : ''
                                 let subject = item["t:Subject"][0]
                                 let organizers = item["t:Organizer"].map((item) => {
                                     return item["t:Mailbox"][0]["t:Name"]
                                 })
+                                let id = item["t:ItemId"][0]['$'];
                                 const object = {
+                                    id: id,
                                     start: start,
                                     end: end,
                                     location: location,
@@ -235,13 +240,13 @@ class Calendar extends Component {
 
     componentDidMount(){
         this.updateMeetings();
-        //this.intervalId = setInterval(() => {
-        //    this.updateMeetings();
-        //}, 2000);
+        this.intervalId = setInterval(() => {
+            this.updateMeetings();
+        }, 1000);
     }
 
-    componentWillUnMount(){
-        //clearInterval(this.intervalId)
+    componentWillUnmount(){
+        clearInterval(this.intervalId)
     }
 
 
